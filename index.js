@@ -7,11 +7,15 @@ app.use(cors());
 app.use(express.json());
 
 const MongoClient = require("mongodb").MongoClient;
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jzyej.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.m3oap.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+console.log("Conected", uri);
+//const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jzyej.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+
 client.connect((err) => {
   const orderCollection = client
     .db(`${process.env.DB_NAME}`)
@@ -39,16 +43,23 @@ client.connect((err) => {
       res.send(result.insertedCount > 0);
     });
   });
+
+
+
   app.get("/getReview", (req, res) => {
     reviewCollection.find({}).toArray((error, documents) => {
       res.send(documents);
     });
   });
+
+
   app.get("/getServices", (req, res) => {
     servicesCollection.find({}).toArray((error, documents) => {
       res.send(documents);
     });
   });
+
+
   app.post("/chosenService", (req, res) => {
     const chosenId = req.body.id;
 
@@ -58,6 +69,8 @@ client.connect((err) => {
         res.send(document);
       });
   });
+
+
   app.post("/addReview", (req, res) => {
     const orderDetails = req.body;
     reviewCollection.insertOne(orderDetails).then((result) => {
@@ -65,12 +78,15 @@ client.connect((err) => {
     });
   });
 
+
   app.post("/addServices", (req, res) => {
     const orderDetails = req.body;
     servicesCollection.insertOne(orderDetails).then((result) => {
       res.send(result.insertedCount > 0);
     });
   });
+
+
   app.post("/dashboard", (req, res) => {
     const email = req.body.email;
     adminCollection.find({ email: email }).toArray((err, admins) => {
@@ -87,6 +103,8 @@ client.connect((err) => {
       }
     });
   });
+
+
   app.patch("/update", (req, res) => {
     const id = req.body.userId;
     const status = req.body.status;
@@ -102,6 +120,8 @@ client.connect((err) => {
         res.send(result.modifiedCount > 0);
       });
   });
+
+
   app.delete("/delete/:id", (req, res) => {
     servicesCollection
       .deleteOne({ _id: ObjectID(req.params.id) })
@@ -109,6 +129,7 @@ client.connect((err) => {
         res.send(result.deletedCount > 0);
       });
   });
+
   app.post("/isAdmin", (req, res) => {
     const email = req.body.email;
     adminCollection.find({ email: email }).toArray((err, admins) => {
@@ -117,8 +138,9 @@ client.connect((err) => {
   });
 });
 
+
 app.get("/", function (req, res) {
-  res.send("hello World");
+  res.send("Welcome to Teaching Club..........");
 });
 
 app.listen(process.env.PORT || 5000);
